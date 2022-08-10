@@ -60,7 +60,8 @@ def generate_index_page(version, commit):
     ['https://web.archive.org/web/20200224003306/https://msikma.github.io/pokesprite/other/pkmn-shiny-only.png', 'Shiny Pokémon only'],
     ['https://web.archive.org/web/20200224003306/https://msikma.github.io/pokesprite/other/items-only.png', 'Items only']
   ]
-  content = wrap_in_html('''
+  return wrap_in_html(
+      '''
     <div class="markdown-body">
       <div class="text-section">
         <h1 class="title">%(title_sprite)sPokéSprite</h1>
@@ -82,16 +83,34 @@ def generate_index_page(version, commit):
         Everything else, and the programming code, is governed by the MIT license.</p>
       </div>
     </div>
-  ''' % {
-    'menu_links': get_menu_links('index'),
-    'example_image': 'https://raw.githubusercontent.com/msikma/pokesprite/master/resources/images/banner_gen8_2x.png',
-    'example_image_width': '726',
-    'title_sprite': get_title_venusaur(),
-    'project_url': PROJECT_URL,
-    'old_links': ''.join(['<li><a href="%s">Gen 7 - %s</a></li>' % (item[0], item[1]) for item in old_links]),
-    'old_images': ''.join(['<li><a href="%s">Gen 7 - %s</a></li>' % (item[0], item[1]) for item in old_images])
-  }, 'Index', version, commit, '.')
-  return content
+  '''
+      % {
+          'menu_links':
+          get_menu_links('index'),
+          'example_image':
+          'https://raw.githubusercontent.com/msikma/pokesprite/master/resources/images/banner_gen8_2x.png',
+          'example_image_width':
+          '726',
+          'title_sprite':
+          get_title_venusaur(),
+          'project_url':
+          PROJECT_URL,
+          'old_links':
+          ''.join([
+              '<li><a href="%s">Gen 7 - %s</a></li>' % (item[0], item[1])
+              for item in old_links
+          ]),
+          'old_images':
+          ''.join([
+              '<li><a href="%s">Gen 7 - %s</a></li>' % (item[0], item[1])
+              for item in old_images
+          ]),
+      },
+      'Index',
+      version,
+      commit,
+      '.',
+  )
 
 def wrap_docs_page(table_content, gen, gen_dir, curr_page, json_file, title, is_items_page, is_misc_page, version, commit, sprites_counter, new_sprites_only, items_list):
   '''Wraps a documentation page in a table node and adds styling'''
@@ -101,7 +120,7 @@ def wrap_docs_page(table_content, gen, gen_dir, curr_page, json_file, title, is_
   json_link = f'<a href="{json_url}"><code>data/{json_file}</code></a>'
 
   if title is None and gen:
-    title = 'Gen ' + str(gen) + (f' (new sprites only)' if new_sprites_only else '')
+    title = f'Gen {str(gen)}' + (' (new sprites only)' if new_sprites_only else '')
 
   main_info = '''
     <p>This table lists all inventory item sprites. These items are from the last several games and is up-to-date as of Pokémon Sword/Shield. The sprites are from Gen 3 through 8.</p>
@@ -129,7 +148,8 @@ def wrap_docs_page(table_content, gen, gen_dir, curr_page, json_file, title, is_
     'new_sprites_only': '<strong>Only items that contain <code>"is_prev_gen_icon": false</code> are shown.</strong>' if new_sprites_only else '',
     'subtype': ' (new sprites only)' if '-new' in curr_page else '',
   }
-  return wrap_in_html('''
+  return wrap_in_html(
+      ('''
     <div class="markdown-body">
       <div class="text-section">
         <h1 class="title">%(title_sprite)sPokéSprite</h1>
@@ -146,18 +166,24 @@ def wrap_docs_page(table_content, gen, gen_dir, curr_page, json_file, title, is_
         Everything else, and the programming code, is governed by the MIT license.</p>
       </div>
     </div>
-  ''' % {
-    'table_content': table_content,
-    'title_sprite': get_title_venusaur(),
-    'gen': ' gen%s' % gen if gen else '',
-    'main_info': main_info,
-    'curr_page': curr_page,
-    'version': version,
-    'menu_links': get_menu_links(curr_page),
-    'commit': commit,
-    'project_url': PROJECT_URL,
-    'sprites_counter': sprites_counter
-  }, title, version, commit, '..')
+  '''
+       % {
+           'table_content': table_content,
+           'title_sprite': get_title_venusaur(),
+           'gen': f' gen{gen}' if gen else '',
+           'main_info': main_info,
+           'curr_page': curr_page,
+           'version': version,
+           'menu_links': get_menu_links(curr_page),
+           'commit': commit,
+           'project_url': PROJECT_URL,
+           'sprites_counter': sprites_counter,
+       }),
+      title,
+      version,
+      commit,
+      '..',
+  )
 
 def get_menu_links(curr_page):
   menu = [
@@ -194,12 +220,13 @@ def wrap_in_html(content, title, version, commit, res_dir = '.'):
     %(content)s
   </body>
 </html>
-  '''.strip() % {
-    'res_dir': res_dir,
-    'content': content,
-    'title': ' - ' + title if title else '',
-    'version': version,
-    'commit': commit
+  '''.strip(
+  ) % {
+      'res_dir': res_dir,
+      'content': content,
+      'title': f' - {title}' if title else '',
+      'version': version,
+      'commit': commit,
   }
 
 def run_cmd(cmd):
@@ -274,13 +301,13 @@ def get_pkm_form(form_name, form_alias, is_unofficial_icon, is_female, has_unoff
 
 def get_pkm_url(base, slug, is_shiny, is_female, is_right):
   return ''.join([
-    base,
-    '/regular' if not is_shiny else '/shiny',
-    '/female' if is_female else '',
-    '/right' if is_right else '',
-    '/',
-    slug,
-    '.png'
+      base,
+      '/shiny' if is_shiny else '/regular',
+      '/female' if is_female else '',
+      '/right' if is_right else '',
+      '/',
+      slug,
+      '.png',
   ])
 
 def get_etc_url(base, slug):
@@ -311,8 +338,8 @@ def get_misc_url(base, file):
   ])
 
 def get_pkm_gen(is_prev_gen_icon, docs_gen):
-  prev_gen = str(int(docs_gen) - 1)
   if is_prev_gen_icon:
+    prev_gen = str(int(docs_gen) - 1)
     return { 'node': prev_gen, 'expl': f'Icon is from generation {prev_gen}', 'cls': '' }
   return ''
 
@@ -329,10 +356,9 @@ def get_pkm_unofficial(is_unofficial_icon):
 def get_td_node(td):
   # If the column is a list, we'll render several columns.
   if isinstance(td, list):
-    cols = []
     non_empty = list(filter(len, td))
     first_col_span = len(td) - (len(non_empty) - 1)
-    cols.append(f'<td class="form" colspan="{first_col_span}">{td[0]}</td>')
+    cols = [f'<td class="form" colspan="{first_col_span}">{td[0]}</td>']
     # The rest of the columns are either plain strings, or a dict containing { node, expl }.
     for col in non_empty[1:]:
       if isinstance(col, dict):
@@ -345,12 +371,12 @@ def get_td_node(td):
     return ''.join(cols)
 
   # Otherwise it's a string, and we'll check if it contains an image.
-  attr = ' class="image"' if str(td)[:4] == '<img' else ''
+  attr = ' class="image"' if str(td).startswith('<img') else ''
   return f'<td{attr}>{td}</td>'
 
 def get_img_node(url, name, form_name, type, retina_type = None):
   form_name = html.escape(form_name)
-  cls = [type, 'retina retina-' + retina_type if retina_type else '']
+  cls = [type, f'retina retina-{retina_type}' if retina_type else '']
   cls = ' '.join(cls).strip()
   return f'<img class="{cls}" src="{url}" alt="{form_name}" />'
 
